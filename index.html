@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+<link rel="manifest" href="manifest.json">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>JEE Main CBT Practice</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Inter,Arial,sans-serif;background:#f4f6fb;color:#172033}
+header{background:#fff;border-bottom:1px solid #ddd;padding:14px 20px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:3}
+.brand{font-weight:800}.timer{font-size:20px;font-weight:800;color:#b42318}
+main{max-width:1200px;margin:24px auto;padding:0 16px}.card{background:#fff;border:1px solid #e1e5ee;border-radius:14px;padding:22px;box-shadow:0 2px 8px #00000008}
+.grid{display:grid;grid-template-columns:1fr 320px;gap:18px}.setup{max-width:720px;margin:40px auto}
+label{display:block;font-weight:700;margin:14px 0 7px}input,select{width:100%;padding:12px;border:1px solid #ccd3df;border-radius:9px;font-size:16px}
+button{border:0;border-radius:9px;padding:11px 15px;font-weight:700;cursor:pointer;background:#155eef;color:white;margin:4px}
+button.secondary{background:#eef2f7;color:#172033}.hidden{display:none!important}
+.options button{display:block;width:100%;text-align:left;background:#fff;color:#172033;border:1px solid #d5dae4;margin:9px 0}
+.options button.selected{border:2px solid #155eef;background:#eef4ff}
+.actions{display:flex;flex-wrap:wrap;margin-top:20px}.qhead{display:flex;justify-content:space-between;gap:12px}
+.palette{display:grid;grid-template-columns:repeat(5,1fr);gap:7px;margin-top:12px}.p{padding:9px 0;text-align:center;border-radius:7px;background:#e5e7eb;cursor:pointer;font-weight:700}.p.answered{background:#22c55e;color:#fff}.p.review{background:#8b5cf6;color:#fff}.p.answered.review{background:linear-gradient(135deg,#8b5cf6 55%,#22c55e 56%)}
+.tabs{display:flex;gap:6px;flex-wrap:wrap}.tabs button.active{background:#111827}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.stat{padding:15px;background:#f8fafc;border-radius:10px}.solution{border-top:1px solid #e4e7ec;padding:14px 0}.ok{color:#15803d}.bad{color:#b91c1c}
+@media(max-width:800px){.grid{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,1fr)}header{padding:12px}.palette{grid-template-columns:repeat(8,1fr)}}
+</style>
+</head>
+<body>
+<header><div class="brand">JEE Main CBT Practice</div><div id="timer" class="timer">03:00:00</div></header>
+
+<main>
+<section id="setup" class="card setup">
+<h1>JEE Main CBT Practice</h1>
+<p>Generate a 75-question practice paper with live web search support and a built-in fallback.</p>
+<label>Candidate name</label><input id="name" placeholder="Enter your name">
+<label>Class</label>
+<select id="level"><option>11th</option><option>12th</option><option>Dropper</option></select>
+<button onclick="generate()">Generate Paper</button>
+<p id="msg"></p>
+</section>
+
+<section id="exam" class="hidden">
+<div class="grid">
+<div class="card">
+<div class="qhead"><h2 id="subject">Physics</h2><strong id="qcount">Question 1 of 75</strong></div>
+<p id="chapter"></p><h3 id="question"></h3><div id="options" class="options"></div>
+<div class="actions">
+<button onclick="saveNext()">Save & Next</button><button class="secondary" onclick="clearAns()">Clear Response</button>
+<button class="secondary" onclick="toggleReview()">Mark for Review</button>
+</div>
+</div>
+<aside class="card"><h3>Question Palette</h3><p>Gray: unanswered · Green: answered · Purple: review</p><div id="palette" class="palette"></div><button onclick="submitExam()">Submit Exam</button></aside>
+</div>
+</section>
+
+<section id="result" class="hidden card">
+<h1>Result</h1><div id="stats" class="stats"></div><h2>Solutions</h2><div id="solutions"></div>
+</section>
+</main>
+
+<script>
+const S={questions:[],answers:{},review:new Set(),i:0,session:null,end:0,timer:null};
+
+function $(id){return document.getElementById(id)}
+async function generate(){
+  $("msg").textContent="Generating paper…";
+  try{
+    const r=await fetch("/api/generate-paper",{method:"POST",headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({name:$("name").value,level:$("level").value})});
+    const d=await r.json(); if(!r.ok) throw Error(d.error);
+    S.questions=d.questions;S.session=d.session_id;S.end=Date.now()+d.duration_seconds*1000;
+    $("setup").classList.add("hidden");$("exam").classList.remove("hidden");render();
+    S.timer=setInterval(tick,1000);tick();
+  }catch(e){$("msg").textContent=e.message}
+}
+function tick(){
+  let n=Math.max(0,S.end-Date.now()),s=Math.floor(n/1000),h=Math.floor(s/3600);s%=3600;let m=Math.floor(s/60);s%=60;
+  $("timer").textContent=`${String(h).padStart(2,"0")}:${String(m).padStart(2,"0")}:${String(s).padStart(2,"0")}`;
+  if(n<=0){clearInterval(S.timer);submitExam(true)}
+}
+function render(){
+ const q=S.questions[S.i];$("subject").textContent=q.subject;$("chapter").textContent=q.chapter||"";
+ $("qcount").textContent=`Question ${S.i+1} of ${S.questions.length}`;$("question").textContent=q.question;
+ $("options").innerHTML=q.options.map((o,j)=>`<button class="${S.answers[S.i]===j?'selected':''}" onclick="choose(${j})">${String.fromCharCode(65+j)}. ${o}</button>`).join("");
+ $("palette").innerHTML=S.questions.map((_,i)=>`<div class="p ${S.answers[i]!==undefined?'answered':''} ${S.review.has(i)?'review':''}" onclick="go(${i})">${i+1}</div>`).join("");
+}
+function choose(j){S.answers[S.i]=j;render()}
+function go(i){S.i=i;render()}
+function clearAns(){delete S.answers[S.i];render()}
+function toggleReview(){S.review.has(S.i)?S.review.delete(S.i):S.review.add(S.i);saveNext()}
+function saveNext(){S.i=Math.min(S.i+1,S.questions.length-1);render()}
+async function submitExam(auto=false){
+ if(!auto&&!confirm("Submit the exam?"))return;
+ const answers={};Object.entries(S.answers).forEach(([k,v])=>answers[Number(k)+1]=v);
+ const r=await fetch("/api/submit-exam",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({session_id:S.session,answers})});
+ const d=await r.json();if(!r.ok){alert(d.error);return}
+ clearInterval(S.timer);$("exam").classList.add("hidden");$("result").classList.remove("hidden");$("timer").textContent="Submitted";
+ $("stats").innerHTML=[["Score",`${d.score}/${d.max_score}`],["Correct",d.correct],["Incorrect",d.incorrect],["Accuracy",`${d.accuracy}%`]].map(x=>`<div class="stat"><b>${x[0]}</b><br><strong>${x[1]}</strong></div>`).join("");
+ $("solutions").innerHTML=d.solutions.map(x=>`<div class="solution"><b>Q${x.number} · ${x.subject}</b><p>${x.question}</p><p class="${x.status==='correct'?'ok':x.status==='incorrect'?'bad':''}">${x.status}</p><p><b>Correct:</b> ${String.fromCharCode(65+x.correct_option)}. ${x.options[x.correct_option]}</p><p>${x.solution}</p></div>`).join("");
+}
+</script>
+</body>
+</html>

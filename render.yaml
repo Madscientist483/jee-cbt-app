@@ -1,0 +1,8 @@
+services:
+  - type: web
+    name: jee-cbt-app
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app
+    healthCheckPath: /api/health
+    autoDeploy: true
