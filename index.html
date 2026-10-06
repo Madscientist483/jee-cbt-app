@@ -1,100 +1,331 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<link rel="manifest" href="manifest.json">
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>JEE Main CBT Practice</title>
-<style>
-*{box-sizing:border-box}body{margin:0;font-family:Inter,Arial,sans-serif;background:#f4f6fb;color:#172033}
-header{background:#fff;border-bottom:1px solid #ddd;padding:14px 20px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:3}
-.brand{font-weight:800}.timer{font-size:20px;font-weight:800;color:#b42318}
-main{max-width:1200px;margin:24px auto;padding:0 16px}.card{background:#fff;border:1px solid #e1e5ee;border-radius:14px;padding:22px;box-shadow:0 2px 8px #00000008}
-.grid{display:grid;grid-template-columns:1fr 320px;gap:18px}.setup{max-width:720px;margin:40px auto}
-label{display:block;font-weight:700;margin:14px 0 7px}input,select{width:100%;padding:12px;border:1px solid #ccd3df;border-radius:9px;font-size:16px}
-button{border:0;border-radius:9px;padding:11px 15px;font-weight:700;cursor:pointer;background:#155eef;color:white;margin:4px}
-button.secondary{background:#eef2f7;color:#172033}.hidden{display:none!important}
-.options button{display:block;width:100%;text-align:left;background:#fff;color:#172033;border:1px solid #d5dae4;margin:9px 0}
-.options button.selected{border:2px solid #155eef;background:#eef4ff}
-.actions{display:flex;flex-wrap:wrap;margin-top:20px}.qhead{display:flex;justify-content:space-between;gap:12px}
-.palette{display:grid;grid-template-columns:repeat(5,1fr);gap:7px;margin-top:12px}.p{padding:9px 0;text-align:center;border-radius:7px;background:#e5e7eb;cursor:pointer;font-weight:700}.p.answered{background:#22c55e;color:#fff}.p.review{background:#8b5cf6;color:#fff}.p.answered.review{background:linear-gradient(135deg,#8b5cf6 55%,#22c55e 56%)}
-.tabs{display:flex;gap:6px;flex-wrap:wrap}.tabs button.active{background:#111827}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.stat{padding:15px;background:#f8fafc;border-radius:10px}.solution{border-top:1px solid #e4e7ec;padding:14px 0}.ok{color:#15803d}.bad{color:#b91c1c}
-@media(max-width:800px){.grid{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,1fr)}header{padding:12px}.palette{grid-template-columns:repeat(8,1fr)}}
-</style>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="manifest" href="manifest.json">
+    <title>NTA JEE Main Official Practice CBT</title>
+    <style>
+        * { box-sizing: border-box; font-family: Arial, sans-serif; margin: 0; padding: 0; }
+        body { background: #f0f2f5; color: #333; }
+        header { background: #0056b3; color: white; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; }
+        .brand { font-weight: bold; font-size: 18px; }
+        .timer { background: #ffc107; color: #000; padding: 6px 14px; font-weight: bold; border-radius: 4px; font-size: 16px; }
+        
+        main { max-width: 1200px; margin: 20px auto; padding: 0 15px; }
+        .card { background: white; border-radius: 8px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin-bottom: 20px; }
+        
+        .sub-tabs, .sec-tabs { display: flex; gap: 8px; margin-bottom: 15px; flex-wrap: wrap; }
+        .tab-btn { padding: 8px 16px; border: 1px solid #0056b3; background: #eef2f7; color: #0056b3; cursor: pointer; border-radius: 4px; font-weight: bold; }
+        .tab-btn.active { background: #0056b3; color: white; }
+        
+        .grid { display: grid; grid-template-columns: 1fr 300px; gap: 20px; }
+        @media (max-width: 850px) { .grid { grid-template-columns: 1fr; } }
+        
+        .options-list button { display: block; width: 100%; text-align: left; padding: 12px; margin: 8px 0; border: 1px solid #ccc; background: #fff; border-radius: 5px; cursor: pointer; }
+        .options-list button.selected { background: #d4edda; border-color: #28a745; font-weight: bold; }
+        
+        .num-pad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; max-width: 200px; margin-top: 10px; }
+        .num-pad button { padding: 10px; font-weight: bold; border: 1px solid #ccc; background: #e9ecef; border-radius: 4px; cursor: pointer; }
+        .num-input { font-size: 18px; padding: 8px; width: 200px; margin-bottom: 10px; text-align: center; }
+
+        .palette-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-top: 10px; }
+        .p-btn { padding: 10px; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; background: #e0e0e0; }
+        .p-btn.answered { background: #28a745; color: white; }
+        .p-btn.not-answered { background: #dc3545; color: white; }
+        .p-btn.marked { background: #6f42c1; color: white; }
+
+        .actions { margin-top: 20px; display: flex; gap: 10px; flex-wrap: wrap; }
+        .btn-green { background: #28a745; color: white; padding: 10px 16px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        .btn-red { background: #dc3545; color: white; padding: 10px 16px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        .btn-gray { background: #6c757d; color: white; padding: 10px 16px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        
+        .hidden { display: none !important; }
+        .ch-group { margin: 10px 0; }
+        .ch-group label { display: block; margin: 4px 0; }
+    </style>
 </head>
 <body>
-<header><div class="brand">JEE Main CBT Practice</div><div id="timer" class="timer">03:00:00</div></header>
+
+<header>
+    <div class="brand">NTA JEE Main Practice Platform</div>
+    <div id="timer-box" class="timer hidden">Time Left: <span id="timer-display">180:00</span></div>
+</header>
 
 <main>
-<section id="setup" class="card setup">
-<h1>JEE Main CBT Practice</h1>
-<p>Generate a 75-question practice paper with live web search support and a built-in fallback.</p>
-<label>Candidate name</label><input id="name" placeholder="Enter your name">
-<label>Class</label>
-<select id="level"><option>11th</option><option>12th</option><option>Dropper</option></select>
-<button onclick="generate()">Generate Paper</button>
-<p id="msg"></p>
-</section>
+    <!-- SETUP / TOPIC SELECTION SCREEN -->
+    <div id="setup-screen" class="card">
+        <h2>Candidate Registration & Chapter Selection</h2>
+        <br>
+        <label><b>Candidate Name:</b></label><br>
+        <input type="text" id="cand-name" placeholder="Enter full name" style="padding: 8px; width: 100%; max-width: 300px; margin: 8px 0;"><br><br>
+        
+        <label><b>Target Class:</b></label><br>
+        <select id="cand-class" style="padding: 8px; margin: 8px 0;" onchange="loadChapters()">
+            <option value="11th">Class 11th</option>
+            <option value="12th">Class 12th</option>
+            <option value="dropper">Dropper</option>
+        </select>
+        
+        <br><br>
+        <h3>Select Syllabus Topics / Chapters:</h3>
+        <div id="chapter-selector"></div>
+        <br>
+        <button class="btn-green" onclick="startExam()">Generate Paper & Start Test</button>
+    </div>
 
-<section id="exam" class="hidden">
-<div class="grid">
-<div class="card">
-<div class="qhead"><h2 id="subject">Physics</h2><strong id="qcount">Question 1 of 75</strong></div>
-<p id="chapter"></p><h3 id="question"></h3><div id="options" class="options"></div>
-<div class="actions">
-<button onclick="saveNext()">Save & Next</button><button class="secondary" onclick="clearAns()">Clear Response</button>
-<button class="secondary" onclick="toggleReview()">Mark for Review</button>
-</div>
-</div>
-<aside class="card"><h3>Question Palette</h3><p>Gray: unanswered · Green: answered · Purple: review</p><div id="palette" class="palette"></div><button onclick="submitExam()">Submit Exam</button></aside>
-</div>
-</section>
+    <!-- TEST INTERFACE SCREEN -->
+    <div id="exam-screen" class="hidden">
+        <div class="sub-tabs">
+            <button class="tab-btn active" id="tab-physics" onclick="switchSubject('physics')">Physics</button>
+            <button class="tab-btn" id="tab-chemistry" onclick="switchSubject('chemistry')">Chemistry</button>
+            <button class="tab-btn" id="tab-maths" onclick="switchSubject('maths')">Mathematics</button>
+        </div>
+        
+        <div class="sec-tabs">
+            <button class="tab-btn active" id="sec-a-btn" onclick="switchSection('section_a')">Section A (MCQs)</button>
+            <button class="tab-btn" id="sec-b-btn" onclick="switchSection('section_b')">Section B (Numerical Value)</button>
+        </div>
 
-<section id="result" class="hidden card">
-<h1>Result</h1><div id="stats" class="stats"></div><h2>Solutions</h2><div id="solutions"></div>
-</section>
+        <div class="grid">
+            <div class="card">
+                <h3 id="q-title">Question 1</h3>
+                <p id="q-text" style="margin: 15px 0; font-size: 16px;"></p>
+                
+                <!-- MCQ OPTIONS -->
+                <div id="mcq-box" class="options-list"></div>
+                
+                <!-- NUMERICAL VALUE KEYPAD -->
+                <div id="num-box" class="hidden">
+                    <label>Enter Integer Answer:</label><br>
+                    <input type="text" id="num-input-val" class="num-input" readonly>
+                    <div class="num-pad">
+                        <button onclick="pressNum('1')">1</button><button onclick="pressNum('2')">2</button><button onclick="pressNum('3')">3</button>
+                        <button onclick="pressNum('4')">4</button><button onclick="pressNum('5')">5</button><button onclick="pressNum('6')">6</button>
+                        <button onclick="pressNum('7')">7</button><button onclick="pressNum('8')">8</button><button onclick="pressNum('9')">9</button>
+                        <button onclick="pressNum('-')">-</button><button onclick="pressNum('0')">0</button><button onclick="pressNum('clear')">C</button>
+                    </div>
+                </div>
+
+                <div class="actions">
+                    <button class="btn-green" onclick="saveAndNext()">Save & Next</button>
+                    <button class="btn-gray" onclick="clearResponse()">Clear Response</button>
+                    <button class="btn-red" onclick="submitExam()">Submit Exam</button>
+                </div>
+            </div>
+
+            <!-- QUESTION PALETTE PANEL -->
+            <div class="card">
+                <h3>Question Palette</h3>
+                <div id="palette" class="palette-grid"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ANALYSIS SCREEN -->
+    <div id="analysis-screen" class="card hidden">
+        <h2>NTA Performance & Score Analysis</h2>
+        <br>
+        <div id="score-summary"></div>
+        <br>
+        <h3>Detailed Solutions & Explanations:</h3>
+        <div id="solutions-box" style="margin-top: 15px;"></div>
+    </div>
 </main>
 
 <script>
-const S={questions:[],answers:{},review:new Set(),i:0,session:null,end:0,timer:null};
+    let examData = {};
+    let answers = {};
+    let currentSub = 'physics';
+    let currentSec = 'section_a';
+    let currentQIndex = 0;
+    let timerInterval = null;
+    let secondsLeft = 180 * 60;
 
-function $(id){return document.getElementById(id)}
-async function generate(){
-  $("msg").textContent="Generating paper…";
-  try{
-    const r=await fetch("/api/generate-paper",{method:"POST",headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({name:$("name").value,level:$("level").value})});
-    const d=await r.json(); if(!r.ok) throw Error(d.error);
-    S.questions=d.questions;S.session=d.session_id;S.end=Date.now()+d.duration_seconds*1000;
-    $("setup").classList.add("hidden");$("exam").classList.remove("hidden");render();
-    S.timer=setInterval(tick,1000);tick();
-  }catch(e){$("msg").textContent=e.message}
-}
-function tick(){
-  let n=Math.max(0,S.end-Date.now()),s=Math.floor(n/1000),h=Math.floor(s/3600);s%=3600;let m=Math.floor(s/60);s%=60;
-  $("timer").textContent=`${String(h).padStart(2,"0")}:${String(m).padStart(2,"0")}:${String(s).padStart(2,"0")}`;
-  if(n<=0){clearInterval(S.timer);submitExam(true)}
-}
-function render(){
- const q=S.questions[S.i];$("subject").textContent=q.subject;$("chapter").textContent=q.chapter||"";
- $("qcount").textContent=`Question ${S.i+1} of ${S.questions.length}`;$("question").textContent=q.question;
- $("options").innerHTML=q.options.map((o,j)=>`<button class="${S.answers[S.i]===j?'selected':''}" onclick="choose(${j})">${String.fromCharCode(65+j)}. ${o}</button>`).join("");
- $("palette").innerHTML=S.questions.map((_,i)=>`<div class="p ${S.answers[i]!==undefined?'answered':''} ${S.review.has(i)?'review':''}" onclick="go(${i})">${i+1}</div>`).join("");
-}
-function choose(j){S.answers[S.i]=j;render()}
-function go(i){S.i=i;render()}
-function clearAns(){delete S.answers[S.i];render()}
-function toggleReview(){S.review.has(S.i)?S.review.delete(S.i):S.review.add(S.i);saveNext()}
-function saveNext(){S.i=Math.min(S.i+1,S.questions.length-1);render()}
-async function submitExam(auto=false){
- if(!auto&&!confirm("Submit the exam?"))return;
- const answers={};Object.entries(S.answers).forEach(([k,v])=>answers[Number(k)+1]=v);
- const r=await fetch("/api/submit-exam",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({session_id:S.session,answers})});
- const d=await r.json();if(!r.ok){alert(d.error);return}
- clearInterval(S.timer);$("exam").classList.add("hidden");$("result").classList.remove("hidden");$("timer").textContent="Submitted";
- $("stats").innerHTML=[["Score",`${d.score}/${d.max_score}`],["Correct",d.correct],["Incorrect",d.incorrect],["Accuracy",`${d.accuracy}%`]].map(x=>`<div class="stat"><b>${x[0]}</b><br><strong>${x[1]}</strong></div>`).join("");
- $("solutions").innerHTML=d.solutions.map(x=>`<div class="solution"><b>Q${x.number} · ${x.subject}</b><p>${x.question}</p><p class="${x.status==='correct'?'ok':x.status==='incorrect'?'bad':''}">${x.status}</p><p><b>Correct:</b> ${String.fromCharCode(65+x.correct_option)}. ${x.options[x.correct_option]}</p><p>${x.solution}</p></div>`).join("");
-}
+    function loadChapters() {
+        const cls = document.getElementById('cand-class').value;
+        fetch('/api/get-chapters', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({class: cls})
+        })
+        .then(res => res.json())
+        .then(data => {
+            let html = '';
+            for (let sub in data) {
+                html += `<div class="ch-group"><b>${sub.toUpperCase()}:</b><br>`;
+                data[sub].forEach(ch => {
+                    html += `<label><input type="checkbox" name="ch-${sub}" value="${ch}" checked> ${ch}</label>`;
+                });
+                html += `</div>`;
+            }
+            document.getElementById('chapter-selector').innerHTML = html;
+        });
+    }
+
+    function startExam() {
+        fetch('/api/generate-paper', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({})
+        })
+        .then(res => res.json())
+        .then(res => {
+            examData = res.paper;
+            document.getElementById('setup-screen').classList.add('hidden');
+            document.getElementById('exam-screen').classList.remove('hidden');
+            document.getElementById('timer-box').classList.remove('hidden');
+            startTimer();
+            renderQuestion();
+        });
+    }
+
+    function startTimer() {
+        timerInterval = setInterval(() => {
+            secondsLeft--;
+            let mins = Math.floor(secondsLeft / 60);
+            let secs = secondsLeft % 60;
+            document.getElementById('timer-display').innerText = `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+            if (secondsLeft <= 0) {
+                clearInterval(timerInterval);
+                submitExam();
+            }
+        }, 1000);
+    }
+
+    function switchSubject(sub) {
+        currentSub = sub;
+        currentSec = 'section_a';
+        currentQIndex = 0;
+        document.querySelectorAll('.sub-tabs .tab-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById(`tab-${sub}`).classList.add('active');
+        switchSection('section_a');
+    }
+
+    function switchSection(sec) {
+        currentSec = sec;
+        currentQIndex = 0;
+        document.getElementById('sec-a-btn').className = sec === 'section_a' ? 'tab-btn active' : 'tab-btn';
+        document.getElementById('sec-b-btn').className = sec === 'section_b' ? 'tab-btn active' : 'tab-btn';
+        renderQuestion();
+    }
+
+    function renderQuestion() {
+        const questions = examData[currentSub][currentSec];
+        const q = questions[currentQIndex];
+
+        document.getElementById('q-title').innerText = `${currentSub.toUpperCase()} - ${currentSec.replace('_', ' ').toUpperCase()} (Q${currentQIndex + 1})`;
+        document.getElementById('q-text').innerText = q.question;
+
+        const mcqBox = document.getElementById('mcq-box');
+        const numBox = document.getElementById('num-box');
+
+        if (q.type === 'mcq') {
+            mcqBox.classList.remove('hidden');
+            numBox.classList.add('hidden');
+            mcqBox.innerHTML = '';
+            q.options.forEach(opt => {
+                let sel = answers[q.id] === opt ? 'selected' : '';
+                mcqBox.innerHTML += `<button class="${sel}" onclick="selectOpt('${q.id}', '${opt}')">${opt}</button>`;
+            });
+        } else {
+            mcqBox.classList.add('hidden');
+            numBox.classList.remove('hidden');
+            document.getElementById('num-input-val').value = answers[q.id] || '';
+        }
+
+        renderPalette();
+    }
+
+    function selectOpt(qId, opt) {
+        answers[qId] = opt;
+        renderQuestion();
+    }
+
+    function pressNum(val) {
+        const questions = examData[currentSub][currentSec];
+        const qId = questions[currentQIndex].id;
+        let curr = answers[qId] || '';
+        if (val === 'clear') curr = '';
+        else curr += val;
+        answers[qId] = curr;
+        document.getElementById('num-input-val').value = curr;
+        renderPalette();
+    }
+
+    function renderPalette() {
+        const questions = examData[currentSub][currentSec];
+        let html = '';
+        questions.forEach((q, idx) => {
+            let cls = 'p-btn';
+            if (answers[q.id]) cls += ' answered';
+            html += `<button class="${cls}" onclick="jumpQ(${idx})">${idx + 1}</button>`;
+        });
+        document.getElementById('palette').innerHTML = html;
+    }
+
+    function jumpQ(idx) {
+        currentQIndex = idx;
+        renderQuestion();
+    }
+
+    function saveAndNext() {
+        const questions = examData[currentSub][currentSec];
+        if (currentQIndex < questions.length - 1) {
+            currentQIndex++;
+            renderQuestion();
+        }
+    }
+
+    function clearResponse() {
+        const questions = examData[currentSub][currentSec];
+        delete answers[questions[currentQIndex].id];
+        renderQuestion();
+    }
+
+    function submitExam() {
+        clearInterval(timerInterval);
+        fetch('/api/submit-exam', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({answers: answers, paper: examData})
+        })
+        .then(res => res.json())
+        .then(res => {
+            document.getElementById('exam-screen').classList.add('hidden');
+            document.getElementById('timer-box').classList.add('hidden');
+            document.getElementById('analysis-screen').classList.remove('hidden');
+
+            document.getElementById('score-summary').innerHTML = `
+                <p><b>Total Score:</b> ${res.total_score} / 300</p>
+                <p><b>Accuracy:</b> ${res.accuracy}%</p>
+                <p><b>Correct Answers:</b> ${res.total_correct} (+${res.total_correct * 4})</p>
+                <p><b>Wrong Answers:</b> ${res.total_wrong} (-${res.total_wrong})</p>
+                <p><b>Unattempted:</b> ${res.total_unattempted}</p>
+                <br>
+                <p><b>Subject Breakdown:</b> Physics: ${res.subject_scores.physics} | Chemistry: ${res.subject_scores.chemistry} | Maths: ${res.subject_scores.maths}</p>
+            `;
+
+            let solHtml = '';
+            for (let sub in examData) {
+                const allQ = examData[sub].section_a.concat(examData[sub].section_b);
+                allQ.forEach(q => {
+                    let userAns = answers[q.id] || 'Unattempted';
+                    let isCorrect = userAns.toString().toLowerCase() === q.correct.toString().toLowerCase();
+                    solHtml += `
+                        <div style="border-bottom: 1px solid #ccc; padding: 10px 0;">
+                            <p><b>[${sub.toUpperCase()}] ${q.question}</b></p>
+                            <p>Your Answer: ${userAns} | <span style="color: ${isCorrect ? 'green' : 'red'};">Correct Answer: ${q.correct}</span></p>
+                            <p><i>Solution: ${q.explanation}</i></p>
+                        </div>
+                    `;
+                });
+            }
+            document.getElementById('solutions-box').innerHTML = solHtml;
+        });
+    }
+
+    window.onload = loadChapters;
 </script>
 </body>
 </html>
